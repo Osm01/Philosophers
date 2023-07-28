@@ -6,73 +6,151 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/20 16:24:53 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/07/22 20:11:28 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/07/28 19:34:58 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+long long get_time_in_ms()
+{
+	struct timeval	tv;
+	gettimeofday(&tv, NULL);
+	return (long long)tv.tv_sec * 1000 + (long long)tv.tv_usec / 1000;
+}
+
+void	my_usleep(long long target_time)
+{
+	long long	start;
+
+	start = get_time_in_ms();
+	while (get_time_in_ms() - start < target_time)
+		usleep(100);
+}
+
+void    time_take_fork(t_philo *philo)
+{
+    pthread_mutex_lock(&(*philo->com));
+    printf("%lld %d has taken a fork \n", philo->start_time, philo->index_philo);
+    pthread_mutex_unlock(&(*philo->com));
+}
+
+void	time_to_eat(t_philo *philo)
+{
+    pthread_mutex_lock(&(*philo->com));
+	printf("%lld %d is eating \n", philo->start_time, philo->index_philo);
+    pthread_mutex_unlock(&(*philo->com));
+	philo->current_time = get_time_in_ms();
+	my_usleep(philo->time_eat);
+	philo->start_time += (get_time_in_ms() - philo->current_time);
+}
+
+void	time_to_sleep(t_philo *philo)
+{
+    pthread_mutex_lock(&(*philo->com));
+	printf("%lld %d is sleeping \n", philo->start_time, philo->index_philo);
+    pthread_mutex_unlock(&(*philo->com));
+    philo->current_time = get_time_in_ms();
+    my_usleep(philo->time_sleep);
+	philo->start_time += (get_time_in_ms() - philo->current_time);
+}
+
+void	time_to_think(t_philo *philo)
+{
+    pthread_mutex_lock(&(*philo->com));
+	printf("%lld %d is thinking \n", philo->start_time, philo->index_philo);
+    pthread_mutex_unlock(&(*philo->com));
+    philo->current_time = get_time_in_ms();
+    my_usleep(philo->time_die - (philo->time_eat + philo->time_sleep));
+	philo->start_time += (get_time_in_ms() - philo->current_time);
+}
+
+void	time_to_die(t_philo *philo)
+{
+    pthread_mutex_lock(&(*philo->com));
+    printf("%lld %d died\n", philo->start_time, philo->index_philo);
+    pthread_mutex_unlock(&(*philo->com));
+}
+
 void	*philo_routine(void *arg)
 {
-	t_philo *philo;
+    t_philo *philo;
 
-	philo = (t_philo *)arg;
-	if (!philo->prio)
-		usleep((*philo).time_eat * 1000000);
-	printf("\nPHILO IS RUNNING\n");
+    philo = (t_philo *)arg;
+    if ((philo->index_philo + 1) % 2)
+        my_usleep(philo->time_eat);
+    pthread_mutex_lock(&philo->forks[(philo->index_philo + 1) % philo->nb_philos]);
+    pthread_mutex_lock(&philo->forks[philo->index_philo % philo->nb_philos]);
+    time_take_fork(philo);
+    time_to_eat(philo);
+    pthread_mutex_unlock(&philo->forks[(philo->index_philo + 1) % philo->nb_philos]);
+    pthread_mutex_unlock(&philo->forks[philo->index_philo % philo->nb_philos]);
+    time_to_sleep(philo);
+    time_to_think(philo);
 	return (NULL);
 }
 
-void	create_philos(t_philosopher *p_philo, char const *argv[])
+void	create_philos(t_philo *philos, int nb_philos)
 {
 	int	i;
+    int y;
+
+    i = 0;
+    y = 1;
+  
+        while (i < nb_philos)
+        {
+            if (pthread_create(&philos[i].philo, NULL, philo_routine, (void *) &philos[i]))
+                return ;
+            i ++;
+        }
+        while(1){
+            
+        }
+        
+    return ;
+}
+
+void	philo_manager(t_philo *philos, char const *argv[], pthread_mutex_t *forks, pthread_mutex_t *com)
+{
+	int i;
 	int nb_philos;
 
 	i = 0;
 	nb_philos = ft_atoi(argv[1]);
 	while (i < nb_philos)
-	{
-		if (i % 2 == 0)
-			p_philo->philos[i].prio = 0;
-		else
-			p_philo->philos[i].prio = 1;
-		p_philo->philos[i].time_die = ft_atoi(argv[2]);
-		p_philo->philos[i].time_eat = ft_atoi(argv[3]);
-		p_philo->philos[i].time_sleep = ft_atoi(argv[4]);
-		i ++;
-	}
+		pthread_mutex_init(&forks[i ++], NULL);
 	i = 0;
 	while (i < nb_philos)
 	{
-		if (pthread_create(&p_philo->philos[i].philo, NULL, philo_routine, (void *) &p_philo->philos[i].philo) != 0)
-			printf("FAILD to create thread");
-		i ++;
+		philos[i].index_philo = i;
+		philos[i].start_time = 0;
+		philos[i].nb_philos = nb_philos;
+		philos[i].time_die = ft_atoi(argv[2]);
+        philos[i].time_eat = ft_atoi(argv[3]);
+        philos[i].time_sleep = ft_atoi(argv[4]);
+        philos[i].forks = forks;
+        philos[i].com = com;
+        if (philos[i].time_eat + philos[i].time_sleep >= philos[i].time_die)
+            philos[i].should_die = 1;
+        philos[i].should_die = 0;
+        i ++;
 	}
-	i = 0;
-	while (i < nb_philos)
-	{
-		if (pthread_join(p_philo->philos[i].philo, NULL) != 0)
-			printf("FAILDED to wait");
-		i ++;
-	}
-}
-
-void	philo_manager(t_philosopher *parent_philo, char const *argv[], int argc)
-{
-	create_philos(parent_philo, argv);
+	return (create_philos(philos, nb_philos));
 }
 
 int	main(int argc, char const *argv[])
 {
-	t_philosopher	*parent_phi;
+	t_philo 	    *philos;
+    pthread_mutex_t *forks;
+	pthread_mutex_t *com;
 
 	if (argc >= 5)
 	{
-		parent_phi = (t_philosopher *) malloc(sizeof(t_philosopher));
-		parent_phi->philos = (t_philo *) malloc(sizeof(t_philo) * (ft_atoi(argv[1])));
+        philos = (t_philo *) malloc(sizeof (t_philo) * ft_atoi(argv[1]));
+        forks = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t) * ft_atoi(argv[1]));
+        com = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
 		if (argc == 5)
-		{
-			philo_manager(parent_phi, argv, argc);
-		}
+            return (philo_manager(philos, argv, forks,  com), EXIT_SUCCESS);
 	}
 }
