@@ -1,9 +1,9 @@
 NAME = philo
 CC = cc
-CFLAGS = #-fsanitize=thread -g3#-Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -g3
 
 
-SRC = philo.c ft_atoi.c
+SRC = philo.c ft_atoi.c philo_action.c philo_manager.c dead_manager.c
 SRC_OBJ = $(SRC:.c=.o)
 
 all : $(NAME)

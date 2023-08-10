@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/22 18:59:29 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/07/22 18:59:31 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/09 13:59:23 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,13 @@ int	ft_atoi(const char *str)
 	i = 0;
 	while (str[i] != '\0')
 	{
-		if (str[i] == '-' || str[i] == '+' || str[i] != 32)
+		if (str[i] == '-' || str[i] == '+' || str[i] == 32)
 		{
 			if (str[i] == '-')
-			{
 				signe = -1;
-				i ++;
-			}
-			break ;
 		}
+		else
+			break ;
 		i ++;
 	}
 	while (str[i] >= '0' && str[i] <= '9')
