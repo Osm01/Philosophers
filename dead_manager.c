@@ -6,11 +6,21 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 15:15:40 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/12 13:57:11 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/14 17:13:41 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void    detach_all(t_philo *philos, int nb_philos)
+{
+    int i = 0;
+    while (i < nb_philos)
+    {
+        pthread_detach(philos[i].philo);
+        i ++;
+    }
+}
 
 void	*dead_by_number_tours(t_philo *philos, int nb_philos, int nb_tours)
 {
@@ -51,20 +61,11 @@ char const *argv[], int argc)
 		{
 			pthread_mutex_lock(&philos[i].last_meal_lock);
 			if (get_time_in_ms() - philos[i].last_meal > philos[i].time_die)
-				return (time_to_die(&philos[i]));
+				return (time_to_die(&philos[i]), detach_all(philos, nb_philos));
 			pthread_mutex_unlock(&philos[i].last_meal_lock);
 			i ++;
 		}
 		if (dead_by_number_tours(philos, nb_philos, nb_tours))
-			return ;
+			return (detach_all(philos, nb_philos));
 	}
-}
-
-void	free_all(t_helper *helper)
-{
-	free(helper->print_lock);
-	free(helper->forks);
-	free(helper->tour_lock);
-	free(helper->last_meal_lock);
-	free(helper);
 }

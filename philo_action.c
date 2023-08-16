@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 13:37:35 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/12 15:03:48 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/14 21:23:15 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,10 @@ void	time_to_eat(t_philo *philo)
 	printf("%lldms %d is eating \n", \
 	get_time_in_ms() - (*philo->start_timer), philo->index_philo);
 	pthread_mutex_unlock(philo->print_lock);
+	my_usleep(philo->time_eat);
 	pthread_mutex_lock(&philo->last_meal_lock);
 	philo->last_meal = get_time_in_ms();
 	pthread_mutex_unlock(&philo->last_meal_lock);
-	my_usleep(philo->time_eat);
 }
 
 void	time_to_sleep(t_philo *philo)

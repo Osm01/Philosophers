@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/20 16:24:53 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/12 14:05:29 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/14 19:16:48 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	main(int argc, char const *argv[])
 	if (argc == 5 || argc == 6)
 	{
 		philos = (t_philo *) malloc(sizeof (t_philo) * ft_atoi(argv[1]));
-		return (philo_manager(philos, argv, argc), free (philos), EXIT_SUCCESS);
+		return (philo_manager(philos, argv, argc), EXIT_SUCCESS);
 	}
 	return (EXIT_SUCCESS);
 }

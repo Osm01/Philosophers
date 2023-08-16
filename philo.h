@@ -21,6 +21,7 @@
 typedef struct s_philo
 {
 	pthread_t		philo;
+    pthread_mutex_t	*waiter;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*print_lock;
 	pthread_mutex_t	last_meal_lock;

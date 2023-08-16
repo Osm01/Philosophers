@@ -1,7 +1,7 @@
 NAME = philo
 NAME_BONUS = philo_bonus
-CC = cc
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread -g3
+CC = clang
+CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -g3
 
 
 SRC = philo.c ft_atoi.c philo_action.c philo_manager.c dead_manager.c
