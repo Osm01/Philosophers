@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   philo_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/20 16:24:53 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/14 19:16:48 by ouidriss         ###   ########.fr       */
+/*   Created: 2023/08/19 17:39:48 by codespace         #+#    #+#             */
+/*   Updated: 2023/08/19 18:15:40 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 long long	get_time_in_ms(void)
 {
@@ -32,11 +32,17 @@ void	my_usleep(long long target_time)
 int	main(int argc, char const *argv[])
 {
 	t_philo			*philos;
+	int				status;
 
 	if (argc == 5 || argc == 6)
 	{
 		philos = (t_philo *) malloc(sizeof (t_philo) * ft_atoi(argv[1]));
-		return (philo_manager(philos, argv, argc), EXIT_SUCCESS);
+		philo_manager(philos, argv);
+	}
+	while (waitpid(-1, &status , 2) > 0)
+	{
+		if (WEXITSTATUS(status) == 0)
+			break ;
 	}
 	return (EXIT_SUCCESS);
 }
