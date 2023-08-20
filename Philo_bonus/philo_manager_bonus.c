@@ -19,17 +19,20 @@ void	*check_death(void *arg)
 	philo = (t_philo *)arg;
 	while (1)
 	{
+		pthread_mutex_lock(&philo->last_meal_lock);
 		if (get_time_in_ms() - philo->last_meal > philo->time_die)
 		{
 			time_to_die(philo);
 			exit(EXIT_SUCCESS);
 		}
+		pthread_mutex_unlock(&philo->last_meal_lock);
 	}
 }
 
 void	philo_routine(t_philo *philo)
 {
-	if(pthread_create(&philo->philo, NULL, check_death, (void *)philo))
+
+	if (pthread_create(&philo->philo, NULL, check_death, (void *)philo))
 		return ;
 	if (philo->index_philo % 2)
 		usleep(100);
@@ -59,6 +62,7 @@ void	philo_routine(t_philo *philo)
         time_to_sleep(philo);
 		time_to_think(philo);
 	}
+	return ;
 }
 
 void	create_philos(t_philo *philos, int nb_philos)
@@ -81,6 +85,7 @@ void	create_philos(t_philo *philos, int nb_philos)
 		}
 		i ++;
 	}
+	return ;
 }
 
 void	global_init(t_philo *philos, int nb_philos)
@@ -94,12 +99,19 @@ void	global_init(t_philo *philos, int nb_philos)
 	i = 0;
 	forks = (sem_t *) malloc(sizeof(sem_t));
 	print_lock = (sem_t *) malloc(sizeof(sem_t));
+	sem_unlink("forks_sem");
+	sem_unlink("print_sem");
+	forks = sem_open("forks_sem", O_CREAT | O_EXCL, 0644, nb_philos);
+    print_lock = sem_open("print_sem", O_CREAT | O_EXCL, 0644, 1);
+    if (forks == SEM_FAILED || print_lock == SEM_FAILED)
+	{
+
+    	exit(EXIT_FAILURE);
+	}
 	last_meal_lock = (pthread_mutex_t *) malloc(sizeof (pthread_mutex_t) * nb_philos);
 	tour_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t) * nb_philos);
-	sem_unlink("forks");
-	sem_unlink("Print");
-	forks = sem_open("print,", O_CREAT , 0644, nb_philos);
-	print_lock = sem_open("print,", O_CREAT , 0644, 1);
+	if (forks == SEM_FAILED || print_lock == SEM_FAILED)
+		exit(EXIT_FAILURE);
 	while (i < nb_philos)
 	{
 		pthread_mutex_init(&last_meal_lock[i], NULL);
@@ -112,13 +124,14 @@ void	global_init(t_philo *philos, int nb_philos)
 	}
 }
 
-void	philo_manager(t_philo *philos, char const *argv[])
+void	philo_manager(t_philo *philos, int argc, char const *argv[])
 {
 	int			i;
 	int			nb_philos;
 
 	nb_philos = ft_atoi(argv[1]);
 	i = 0;
+	(void)argc;
 	while (i < nb_philos)
 	{
 		philos[i].index_philo = i;
@@ -126,7 +139,10 @@ void	philo_manager(t_philo *philos, char const *argv[])
 		philos[i].time_die = ft_atoi(argv[2]);
 		philos[i].time_eat = ft_atoi(argv[3]);
 		philos[i].time_sleep = ft_atoi(argv[4]);
-		philos[i ++].nb_tours = 0;
+		philos[i].nb_tours = -1;
+		if (argc == 6)
+			philos[i].nb_tours = ft_atoi(argv[5]);
+		i ++;
 	}
 	global_init(philos, nb_philos);
 	return (create_philos(philos, nb_philos));

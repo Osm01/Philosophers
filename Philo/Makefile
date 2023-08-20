@@ -1,6 +1,6 @@
 NAME = philo
 NAME_BONUS = philo_bonus
-CC = clang
+CC = cc
 CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -g3
 
 

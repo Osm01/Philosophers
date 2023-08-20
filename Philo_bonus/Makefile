@@ -1,5 +1,5 @@
 NAME = philo_bonus
-CC = clang
+CC = cc
 CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -g3
 
 

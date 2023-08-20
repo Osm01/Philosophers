@@ -45,7 +45,7 @@ void		time_to_eat(t_philo *philo);
 void		time_to_sleep(t_philo *philo);
 void		time_to_think(t_philo *philo);
 void		time_to_die(t_philo *philo);
-void		philo_manager(t_philo *philos, char const *argv[]);
+void		philo_manager(t_philo *philos, int argc, char const *argv[]);
 long long	get_time_in_ms(void);
 void		my_usleep(long long target_time);
 #endif
