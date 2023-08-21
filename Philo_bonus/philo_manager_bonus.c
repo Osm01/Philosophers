@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 13:46:34 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/19 18:21:01 by codespace        ###   ########.fr       */
+/*   Updated: 2023/08/21 16:13:42 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,44 +31,31 @@ void	*check_death(void *arg)
 
 void	philo_routine(t_philo *philo)
 {
-
+	philo->last_meal = get_time_in_ms();
 	if (pthread_create(&philo->philo, NULL, check_death, (void *)philo))
 		return ;
 	if (philo->index_philo % 2)
-		usleep(100);
+		usleep(200);
 	while (1)
 	{
-		if (philo->index_philo % 2)
-		{
-			sem_wait(philo->forks);
-			time_take_fork(philo, 0);
-			if (philo->nb_philos <= 1)
-				break ;
-			sem_wait(philo->forks);
-			time_take_fork(philo, 1);
-		} 
-		else
-		{
-			sem_wait(philo->forks);
-			time_take_fork(philo, 1);
-			if (philo->nb_philos <= 1)
-				break ;
-			sem_wait(philo->forks);
-			time_take_fork(philo, 0);
-		}
+		sem_wait(philo->forks);
+		time_take_fork(philo, 1);
+		if (philo->nb_philos <= 1)
+			break ;
+		sem_wait(philo->forks);
+		time_take_fork(philo, 0);
         time_to_eat(philo);
         sem_post(philo->forks);
         sem_post(philo->forks);
         time_to_sleep(philo);
 		time_to_think(philo);
 	}
-	return ;
 }
 
 void	create_philos(t_philo *philos, int nb_philos)
 {
-	long long	start_timer;
 	int	i;
+	long long	start_timer;
 
 	i = 0;
 	start_timer = get_time_in_ms();
@@ -80,7 +67,6 @@ void	create_philos(t_philo *philos, int nb_philos)
 		if (philos[i].pid == 0)
 		{
 			philos[i].start_timer = start_timer;
-			philos[i].last_meal = start_timer;
 			philo_routine(&philos[i]);
 		}
 		i ++;
@@ -101,16 +87,11 @@ void	global_init(t_philo *philos, int nb_philos)
 	print_lock = (sem_t *) malloc(sizeof(sem_t));
 	sem_unlink("forks_sem");
 	sem_unlink("print_sem");
-	forks = sem_open("forks_sem", O_CREAT | O_EXCL, 0644, nb_philos);
-    print_lock = sem_open("print_sem", O_CREAT | O_EXCL, 0644, 1);
-    if (forks == SEM_FAILED || print_lock == SEM_FAILED)
-	{
-
-    	exit(EXIT_FAILURE);
-	}
+	forks = sem_open("forks_sem", O_CREAT | O_EXCL, 0666, nb_philos);
+    print_lock = sem_open("print_sem", O_CREAT | O_EXCL, 0666, 1);
 	last_meal_lock = (pthread_mutex_t *) malloc(sizeof (pthread_mutex_t) * nb_philos);
 	tour_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t) * nb_philos);
-	if (forks == SEM_FAILED || print_lock == SEM_FAILED)
+	if (forks == SEM_FAILED || print_lock == SEM_FAILED || !last_meal_lock || !tour_lock)
 		exit(EXIT_FAILURE);
 	while (i < nb_philos)
 	{

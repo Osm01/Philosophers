@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 13:37:35 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/19 18:06:52 by codespace        ###   ########.fr       */
+/*   Updated: 2023/08/21 16:04:33 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,22 @@
 
 void	time_take_fork(t_philo *philo, int take_next_fork)
 {
-	sem_wait(philo->print_lock);
 	if (!take_next_fork)
 	{
+		sem_wait(philo->print_lock);
 		printf("%lldms %d has taken a fork %d\n", \
 		get_time_in_ms() - philo->start_timer, \
 		philo->index_philo, (philo->index_philo % philo->nb_philos));
+		sem_post(philo->print_lock);
 	}
 	else
 	{
+		sem_wait(philo->print_lock);
 		printf("%lldms %d has taken a fork %d\n", \
 		get_time_in_ms() - philo->start_timer, \
 		philo->index_philo, (philo->index_philo + 1) % philo->nb_philos);
+		sem_post(philo->print_lock);
 	}
-	sem_post(philo->print_lock);
 }
 
 void	time_to_eat(t_philo *philo)
