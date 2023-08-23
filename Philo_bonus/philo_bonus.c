@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/19 17:39:48 by codespace         #+#    #+#             */
-/*   Updated: 2023/08/21 15:49:03 by codespace        ###   ########.fr       */
+/*   Created: 2023/08/22 13:38:03 by ouidriss          #+#    #+#             */
+/*   Updated: 2023/08/22 15:49:00 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	main(int argc, char const *argv[])
 	}
 	else
 		return (EXIT_FAILURE);
-	while (waitpid(-1, &status , 2) > 0)
+	while (waitpid(-1, &status, 2) > 0)
 	{
 		if (WEXITSTATUS(status) == EXIT_SUCCESS)
 			break ;

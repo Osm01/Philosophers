@@ -3,33 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   philo_action_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/09 13:37:35 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/21 16:04:33 by codespace        ###   ########.fr       */
+/*   Created: 2023/08/22 13:39:39 by ouidriss          #+#    #+#             */
+/*   Updated: 2023/08/22 15:44:08 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	time_take_fork(t_philo *philo, int take_next_fork)
+void	time_take_fork(t_philo *philo)
 {
-	if (!take_next_fork)
-	{
-		sem_wait(philo->print_lock);
-		printf("%lldms %d has taken a fork %d\n", \
-		get_time_in_ms() - philo->start_timer, \
-		philo->index_philo, (philo->index_philo % philo->nb_philos));
-		sem_post(philo->print_lock);
-	}
-	else
-	{
-		sem_wait(philo->print_lock);
-		printf("%lldms %d has taken a fork %d\n", \
-		get_time_in_ms() - philo->start_timer, \
-		philo->index_philo, (philo->index_philo + 1) % philo->nb_philos);
-		sem_post(philo->print_lock);
-	}
+	sem_wait(philo->print_lock);
+	printf("%lldms %d has taken a fork %d\n", \
+	get_time_in_ms() - philo->start_timer, philo->index_philo, \
+	(philo->index_philo % philo->nb_philos));
+	sem_post(philo->print_lock);
+	if (philo->nb_philos <= 1)
+		exit(EXIT_FAILURE);
+	sem_wait(philo->print_lock);
+	printf("%lldms %d has taken a fork %d\n", \
+	get_time_in_ms() - philo->start_timer, philo->index_philo, \
+	((philo->index_philo + 1) % philo->nb_philos));
+	sem_post(philo->print_lock);
 }
 
 void	time_to_eat(t_philo *philo)

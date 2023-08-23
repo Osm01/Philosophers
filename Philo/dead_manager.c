@@ -6,20 +6,47 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 15:15:40 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/14 17:13:41 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/22 15:30:07 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void    detach_all(t_philo *philos, int nb_philos)
+void	*forks_priority(t_philo *philo, int left_fork, int right_fork)
 {
-    int i = 0;
-    while (i < nb_philos)
-    {
-        pthread_detach(philos[i].philo);
-        i ++;
-    }
+	if (philo->index_philo % 2)
+	{
+		pthread_mutex_lock(&philo->forks[left_fork]);
+		time_take_fork(philo, 0);
+		if (philo->nb_philos <= 1)
+			return (pthread_mutex_unlock(&philo->forks[left_fork]), \
+			(void *) NULL);
+		pthread_mutex_lock(&philo->forks[right_fork]);
+		time_take_fork(philo, 1);
+	}
+	else
+	{
+		pthread_mutex_lock(&philo->forks[right_fork]);
+		time_take_fork(philo, 1);
+		if (philo->nb_philos <= 1)
+			return (pthread_mutex_unlock(&philo->forks[left_fork]), \
+			(void *) NULL);
+		pthread_mutex_lock(&philo->forks[left_fork]);
+		time_take_fork(philo, 0);
+	}
+	return ((void *) 1);
+}
+
+void	detach_all(t_philo *philos, int nb_philos)
+{
+	int	i;
+
+	i = 0;
+	while (i < nb_philos)
+	{
+		pthread_detach(philos[i].philo);
+		i ++;
+	}
 }
 
 void	*dead_by_number_tours(t_philo *philos, int nb_philos, int nb_tours)

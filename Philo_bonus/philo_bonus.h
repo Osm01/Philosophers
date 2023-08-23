@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/20 16:25:35 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/19 18:18:29 by codespace        ###   ########.fr       */
+/*   Created: 2023/08/22 13:39:54 by ouidriss          #+#    #+#             */
+/*   Updated: 2023/08/22 15:49:34 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,11 @@ typedef struct s_philo
 	int				nb_philos;
 	int				nb_tours;
 	int				pid;
+	int				nb_eat;
 }					t_philo;
 
 int			ft_atoi(const char *str);
-void		time_take_fork(t_philo *philo, int take_next_fork);
+void		time_take_fork(t_philo *philo);
 void		time_to_eat(t_philo *philo);
 void		time_to_sleep(t_philo *philo);
 void		time_to_think(t_philo *philo);

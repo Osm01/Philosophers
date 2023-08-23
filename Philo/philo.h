@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/20 16:25:35 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/12 18:03:10 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/22 15:30:36 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,5 @@ long long	get_time_in_ms(void);
 void		my_usleep(long long target_time);
 void		dead_manager(t_philo *philos, int nb_philos, \
 			char const *argv[], int argc);
-void		free_all(t_helper *helper);
+void		*forks_priority(t_philo *philo, int left_fork, int right_fork);
 #endif

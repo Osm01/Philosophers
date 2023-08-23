@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 13:46:34 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/14 21:23:47 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/22 15:33:48 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,30 +25,12 @@ void	*philo_routine(void *arg)
 		usleep(100);
 	while (1)
 	{
-		if (philo->index_philo % 2)
-		{
-			pthread_mutex_lock(&philo->forks[left_fork]);
-			time_take_fork(philo, 0);
-			if (philo->nb_philos <= 1)
-			{
-				return (pthread_mutex_unlock(&philo->forks[left_fork]), (void *)NULL);
-			}
-			pthread_mutex_lock(&philo->forks[right_fork]);
-			time_take_fork(philo, 1);
-		} else
-		{
-			pthread_mutex_lock(&philo->forks[right_fork]);
-			time_take_fork(philo, 1);
-			if (philo->nb_philos <= 1) {
-				return (pthread_mutex_unlock(&philo->forks[left_fork]), (void *)NULL);
-			}
-			pthread_mutex_lock(&philo->forks[left_fork]);
-			time_take_fork(philo, 0);
-		}
-        time_to_eat(philo);
-        pthread_mutex_unlock(&philo->forks[left_fork]);
-        pthread_mutex_unlock(&philo->forks[right_fork]);
-        time_to_sleep(philo);
+		if (forks_priority(philo, left_fork, right_fork) == NULL)
+			return ((void *) NULL);
+		time_to_eat(philo);
+		pthread_mutex_unlock(&philo->forks[left_fork]);
+		pthread_mutex_unlock(&philo->forks[right_fork]);
+		time_to_sleep(philo);
 		time_to_think(philo);
 	}
 	return (NULL);
@@ -61,9 +43,10 @@ char const *argv[], int argc)
 
 	i = 0;
 	while (i < nb_philos)
-    {
-        philos[i].last_meal = get_time_in_ms();
-		if (pthread_create(&philos[i].philo, NULL, philo_routine, (void *) &philos[i]))
+	{
+		philos[i].last_meal = get_time_in_ms();
+		if (pthread_create(&philos[i].philo, NULL, \
+		philo_routine, (void *) &philos[i]))
 			return ;
 		i ++;
 	}
@@ -76,7 +59,7 @@ pthread_mutex_t	*forks, pthread_mutex_t	*print_lock)
 	int	i;
 	int	nb_philos;
 
-    i = 0;
+	i = 0;
 	nb_philos = philos[i].nb_philos;
 	while (i < nb_philos)
 	{
