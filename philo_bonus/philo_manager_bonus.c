@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 13:40:09 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/22 16:28:13 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/24 16:47:59 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,22 @@ void	*check_death(void *arg)
 
 void	philo_routine(t_philo *philo)
 {
+	if (philo->index_philo % 2)
+		usleep(40);
 	philo->last_meal = get_time_in_ms();
 	if (pthread_create(&philo->philo, NULL, check_death, (void *)philo))
 		return ;
 	while (1)
 	{
-		sem_wait(philo->forks);
-		if (philo->nb_philos > 1) 
-			sem_wait(philo->forks);
-		time_take_fork(philo);
+		if (time_take_fork(philo) == NULL)
+			break ;
 		time_to_eat(philo);
 		sem_post(philo->forks);
 		sem_post(philo->forks);
 		time_to_sleep(philo);
 		time_to_think(philo);
 	}
+	pthread_join(philo->philo, NULL);
 }
 
 void	create_philos(t_philo *philos, int nb_philos)
@@ -69,13 +70,12 @@ void	create_philos(t_philo *philos, int nb_philos)
 			philos[i].start_timer = start_timer;
 			philo_routine(&philos[i]);
 		}
-		usleep(40);
 		i ++;
 	}
 	return ;
 }
 
-void	global_init(t_philo *philos, int nb_philos)
+void	global_init(t_philo *philos, int n_p)
 {
 	sem_t			*forks;
 	sem_t			*print_lock;
@@ -84,16 +84,13 @@ void	global_init(t_philo *philos, int nb_philos)
 	int				i;
 
 	i = 0;
-	forks = (sem_t *) malloc(sizeof(sem_t));
-	print_lock = (sem_t *) malloc(sizeof(sem_t));
-	forks = sem_open("forks_sem", O_CREAT | O_EXCL, 0666, nb_philos);
+	forks = sem_open("forks_sem", O_CREAT | O_EXCL, 0666, n_p);
 	print_lock = sem_open("print_sem", O_CREAT | O_EXCL, 0666, 1);
-	last_meal_lock = (pthread_mutex_t *) \
-	malloc(sizeof (pthread_mutex_t) * nb_philos);
-	tour_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t) * nb_philos);
+	last_meal_lock = (pthread_mutex_t *) malloc(sizeof (pthread_mutex_t) * n_p);
+	tour_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t) * n_p);
 	if (forks == SEM_FAILED || print_lock == SEM_FAILED)
 		exit(EXIT_FAILURE);
-	while (i < nb_philos)
+	while (i < n_p)
 	{
 		pthread_mutex_init(&last_meal_lock[i], NULL);
 		pthread_mutex_init(&tour_lock[i], NULL);
@@ -102,6 +99,8 @@ void	global_init(t_philo *philos, int nb_philos)
 		philos[i].forks = forks;
 		philos[i ++].print_lock = print_lock;
 	}
+	free(last_meal_lock);
+	free(tour_lock);
 }
 
 void	philo_manager(t_philo *philos, int argc, char const *argv[])
@@ -127,5 +126,5 @@ void	philo_manager(t_philo *philos, int argc, char const *argv[])
 	sem_unlink("forks_sem");
 	sem_unlink("print_sem");
 	global_init(philos, nb_philos);
-	return (create_philos(philos, nb_philos));
+	create_philos(philos, nb_philos);
 }

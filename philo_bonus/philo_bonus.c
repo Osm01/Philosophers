@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 13:38:03 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/22 15:49:00 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/25 12:54:10 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,41 @@ void	my_usleep(long long target_time)
 		usleep(10);
 }
 
+void	*checker(int argc, char const *argv[])
+{
+	int	i;
+	int	y;
+	if (argc < 5 || argc > 6)
+		return ((void *) NULL);
+	i = 1;
+	while (i <= (argc - 1))
+	{
+		y = 0;
+		while (argv[i][y])
+		{
+			if (argv[i][y] < '0' || argv[i][y] > '9')
+			{
+				if (argv[i][y] == '-')
+					return (printf("\033[0;31mNegative values are not allowed\n"), (void *) NULL);
+				if (argv[i][y] != '+')
+					return (printf("\033[0;31mUNACCEPTABLE PARAMETTRE :P\n"),(void *) NULL);
+			}
+			y ++;
+		}
+		if (i != 3 && i != 4 && ft_atoi(argv[i]) == 0)
+			return ((void *) NULL);
+		i ++;
+	}
+	return ((void *) 1);
+}
+
 int	main(int argc, char const *argv[])
 {
 	t_philo			*philos;
 	int				status;
 
+	if (checker(argc, argv) == NULL)
+		return (EXIT_FAILURE);
 	if (argc == 5 || argc == 6)
 	{
 		philos = (t_philo *) malloc(sizeof (t_philo) * ft_atoi(argv[1]));
@@ -46,5 +76,6 @@ int	main(int argc, char const *argv[])
 		if (WEXITSTATUS(status) == EXIT_SUCCESS)
 			break ;
 	}
+	free (philos);
 	return (EXIT_SUCCESS);
 }

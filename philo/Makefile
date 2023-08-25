@@ -1,5 +1,4 @@
 NAME = philo
-NAME_BONUS = philo_bonus
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -g3
 

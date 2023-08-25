@@ -53,7 +53,7 @@ char const *argv[], int argc)
 	return (dead_manager(philos, nb_philos, argv, argc));
 }
 
-void	affect_common_mutex(t_philo *philos, t_helper *h, \
+void	affect_common_mutex(t_philo *philos, \
 pthread_mutex_t	*forks, pthread_mutex_t	*print_lock)
 {
 	int	i;
@@ -65,13 +65,11 @@ pthread_mutex_t	*forks, pthread_mutex_t	*print_lock)
 	{
 		philos[i].forks = forks;
 		philos[i].print_lock = print_lock;
-		h->forks = forks;
-		h->print_lock = print_lock;
 		i ++;
 	}
 }
 
-void	mutex_init(t_philo *philos, int nb_philos, t_helper *helper)
+void	mutex_init(t_philo *philos, int nb_philos)
 {
 	pthread_mutex_t	*last_meal_lock;
 	pthread_mutex_t	*tour_lock;
@@ -88,15 +86,15 @@ void	mutex_init(t_philo *philos, int nb_philos, t_helper *helper)
 	pthread_mutex_init(print_lock, NULL);
 	while (i < nb_philos)
 	{
-		pthread_mutex_init(&forks[i], NULL);
+		pthread_mutex_init(&last_meal_lock[i], NULL);
+		pthread_mutex_init(&tour_lock[i], NULL);
 		philos[i].last_meal_lock = last_meal_lock[i];
 		philos[i].tour_lock = tour_lock[i];
-		pthread_mutex_init(&last_meal_lock[i], NULL);
-		pthread_mutex_init(&tour_lock[i ++], NULL);
+		pthread_mutex_init(&forks[i ++], NULL);
 	}
-	helper->last_meal_lock = last_meal_lock;
-	helper->tour_lock = tour_lock;
-	affect_common_mutex(philos, helper, forks, print_lock);
+	affect_common_mutex(philos, forks, print_lock);
+	free(last_meal_lock);
+	free(tour_lock);
 }
 
 void	philo_manager(t_philo *philos, char const *argv[], int argc)
@@ -104,10 +102,8 @@ void	philo_manager(t_philo *philos, char const *argv[], int argc)
 	int			i;
 	int			nb_philos;
 	long long	start_timer;
-	t_helper	*helper;
 
 	nb_philos = ft_atoi(argv[1]);
-	helper = (t_helper *)malloc(sizeof (t_helper));
 	start_timer = get_time_in_ms();
 	i = 0;
 	while (i < nb_philos)
@@ -120,6 +116,6 @@ void	philo_manager(t_philo *philos, char const *argv[], int argc)
 		philos[i].start_timer = &start_timer;
 		philos[i ++].nb_tours = 0;
 	}
-	mutex_init(philos, nb_philos, helper);
+	mutex_init(philos, nb_philos);
 	return (create_philos(philos, nb_philos, argv, argc));
 }

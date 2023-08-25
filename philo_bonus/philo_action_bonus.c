@@ -12,20 +12,23 @@
 
 #include "philo_bonus.h"
 
-void	time_take_fork(t_philo *philo)
+void	*time_take_fork(t_philo *philo)
 {
+	sem_wait(philo->forks);
 	sem_wait(philo->print_lock);
 	printf("%lldms %d has taken a fork %d\n", \
 	get_time_in_ms() - philo->start_timer, philo->index_philo, \
 	(philo->index_philo % philo->nb_philos));
 	sem_post(philo->print_lock);
 	if (philo->nb_philos <= 1)
-		exit(EXIT_FAILURE);
+		return ((void *) NULL);
+	sem_wait(philo->forks);
 	sem_wait(philo->print_lock);
 	printf("%lldms %d has taken a fork %d\n", \
 	get_time_in_ms() - philo->start_timer, philo->index_philo, \
 	((philo->index_philo + 1) % philo->nb_philos));
 	sem_post(philo->print_lock);
+	return ((void *) 1);
 }
 
 void	time_to_eat(t_philo *philo)
