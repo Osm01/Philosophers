@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 15:15:40 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/22 15:30:07 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/30 19:10:22 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 void	*forks_priority(t_philo *philo, int left_fork, int right_fork)
 {
+	if (philo->nb_philos % 2 && philo->index_philo + 1 == \
+	philo->nb_philos && philo->nb_philos > 1)
+		my_usleep(10);
 	if (philo->index_philo % 2)
 	{
 		pthread_mutex_lock(&philo->forks[left_fork]);

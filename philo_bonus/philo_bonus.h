@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 13:39:54 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/24 15:47:08 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/28 18:29:24 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,17 @@
 # include <semaphore.h>
 # include <wait.h>
 # include <fcntl.h>
+# include <limits.h>
 
 typedef struct s_philo
 {
 	pthread_t		philo;
 	sem_t			*forks;
 	sem_t			*print_lock;
-	pthread_mutex_t	last_meal_lock;
-	pthread_mutex_t	tour_lock;
+	sem_t			*last_meal_lock;
+	sem_t			*tour_lock;
 	long long		start_timer;
-	long long		last_meal;
+	struct timeval	last_meal;
 	int				index_philo;
 	int				time_die;
 	int				time_eat;
@@ -40,15 +41,7 @@ typedef struct s_philo
 	int				nb_eat;
 }					t_philo;
 
-typedef struct s_helper
-{
-	sem_t			*forks;
-	sem_t			*print_lock;
-	pthread_mutex_t	*last_meal_lock;
-	pthread_mutex_t	*tour_lock;
-}					t_helper;
-
-int			ft_atoi(const char *str);
+long		ft_atoi(const char *str);
 void		*time_take_fork(t_philo *philo);
 void		time_to_eat(t_philo *philo);
 void		time_to_sleep(t_philo *philo);
@@ -57,4 +50,5 @@ void		time_to_die(t_philo *philo);
 void		philo_manager(t_philo *philos, int argc, char const *argv[]);
 long long	get_time_in_ms(void);
 void		my_usleep(long long target_time);
+long long	get_time(struct timeval last_meal);
 #endif

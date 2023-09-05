@@ -6,7 +6,7 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 13:46:34 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/22 15:33:48 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/31 14:30:47 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void	*philo_routine(void *arg)
 	int		right_fork;
 
 	philo = (t_philo *)arg;
-	left_fork = philo->index_philo % philo->nb_philos;
-	right_fork = (philo->index_philo + 1) % philo->nb_philos;
+	left_fork = philo->index_philo ;
+	right_fork = (philo->index_philo + 1) % (philo->nb_philos);
 	if (philo->index_philo % 2)
 		usleep(100);
 	while (1)
@@ -33,7 +33,6 @@ void	*philo_routine(void *arg)
 		time_to_sleep(philo);
 		time_to_think(philo);
 	}
-	return (NULL);
 }
 
 void	create_philos(t_philo *philos, int nb_philos, \

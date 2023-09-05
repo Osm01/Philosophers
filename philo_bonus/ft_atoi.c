@@ -6,15 +6,15 @@
 /*   By: ouidriss <ouidriss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/22 18:59:29 by ouidriss          #+#    #+#             */
-/*   Updated: 2023/08/09 13:59:23 by ouidriss         ###   ########.fr       */
+/*   Updated: 2023/08/28 14:38:56 by ouidriss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_atoi(const char *str)
+long	ft_atoi(const char *str)
 {
-	int	value;
-	int	signe;
-	int	i;
+	long	value;
+	long	signe;
+	int		i;
 
 	value = 0;
 	signe = 1;
@@ -24,7 +24,7 @@ int	ft_atoi(const char *str)
 		if (str[i] == '-' || str[i] == '+' || str[i] == 32)
 		{
 			if (str[i] == '-')
-				signe = -1;
+				signe *= -1;
 		}
 		else
 			break ;
